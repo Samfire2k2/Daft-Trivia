@@ -25,6 +25,11 @@ const quizGames = {};
 // Use raw buffer for interactions endpoint to preserve signature verification
 app.use(express.raw({ type: 'application/json' }));
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.send('🤖 Daft Punk Bot is live! Use /quiz on Discord to start playing.');
+});
+
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
  * Parse request body and verifies incoming requests using discord-interactions package
