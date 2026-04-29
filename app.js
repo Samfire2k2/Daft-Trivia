@@ -103,8 +103,8 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     if (name === 'profile') {
       const userId = member.user.id;
       const username = member.user.username;
-      const userStats = getUserStats(userId);
-      const rank = getUserRank(userId);
+      const userStats = await getUserStats(userId);
+      const rank = await getUserRank(userId);
       
       const avgAccuracy = userStats.totalAnswered > 0 
         ? Math.round((userStats.totalCorrect / userStats.totalAnswered) * 100)
@@ -144,7 +144,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
 
     // "leaderboard" command - Show top 10
     if (name === 'leaderboard') {
-      const leaderboard = getLeaderboard();
+      const leaderboard = await getLeaderboard();
       
       let leaderboardText = '';
       leaderboard.forEach((user, index) => {
@@ -171,7 +171,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
     if (name === 'daily') {
       const userId = member.user.id;
       
-      if (hasCompletedDailyToday(userId)) {
+      if (await hasCompletedDailyToday(userId)) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
@@ -244,11 +244,11 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         const embed = quiz.getScoreEmbed();
         
         // Update user stats
-        updateUserStats(userId, member.user.username, results);
+        await updateUserStats(userId, member.user.username, results);
         
         // If it was a daily quiz, mark it as completed
         if (quiz.isDaily) {
-          setDailyQuizCompleted(userId);
+          await setDailyQuizCompleted(userId);
         }
         
         delete quizGames[userId];
@@ -289,7 +289,7 @@ app.post('/interactions', verifyKeyMiddleware(process.env.PUBLIC_KEY), async fun
         const results = quiz.getResults();
         
         // Update stats even if quit
-        updateUserStats(userId, member.user.username, results);
+        await updateUserStats(userId, member.user.username, results);
         
         delete quizGames[userId];
         
